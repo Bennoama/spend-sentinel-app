@@ -1,4 +1,5 @@
 Spend-Sentinel-App
+
 Spend-Sentinel-App is an open-source application designed to help users track and manage their credit card payments. This monorepo contains the various submodules that work together to provide a seamless experience for users.
 
 Submodules Overview
