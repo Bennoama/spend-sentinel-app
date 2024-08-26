@@ -1,0 +1,12 @@
+[submodule "spend-sentinel-web-app"]
+	path = spend-sentinel-web-app
+	url = https://github.com/spend-sentinel/spend-sentinel-web-app
+[submodule "transaction-api"]
+	path = transaction-api
+	url = https://github.com/spend-sentinel/transaction-api
+[submodule "bank-scraper"]
+	path = bank-scraper
+	url = https://github.com/spend-sentinel/bank-scraper
+[submodule "spend-sentinel-telebot"]
+	path = spend-sentinel-telebot
+	url = https://github.com/bennoama/spend-sentinel-telebot

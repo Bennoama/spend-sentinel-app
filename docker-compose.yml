@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+  db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db:/data/db
+    container_name: mongodb
+    networks:
+      - app-network
+
+  transaction-api:
+    image: bennoama/transaction_api:latest
+    ports:
+      - "8080:8080"
+    container_name: transaction-api
+    environment:
+      - COLL_NAME=testCollection
+      - DB_NAME=transactionsData
+      - MONGO_URI=mongodb://mongodb:27017
+      - ADDRESS=0.0.0.0
+      - PORT=8080
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  spend-sentinel-web-app:
+    image: bennoama/spend-sentinel-web-app:latest
+    ports:
+      - "3000:3000"
+    container_name: spend-sentinel-web-app
+    networks:
+      - app-network
+    depends_on:
+      - transaction-api
+
+  telebot:
+    image: bennoama/spend-sentinel-telebot:latest
+    container_name: telebot
+    networks:
+      - app-network
+    environment:
+      - TRANSACTION_API_URL=http://transaction-api:8080/
+      - BOT_SAMPLE_INTERVAL=60 #seconds
+    env_file:
+      - ./secrets/botSecrets.env
+    depends_on:
+      - transaction-api
+
+  # spend-sentinel-bank-scraper:
+  #   image: bennoama/spend-sentinel-bank-scraper:latest
+  #   container_name: spend-sentinel-bank-scraper
+  #   environment:
+  #     - TRANSACTION_API_URL=http://transaction-api:8080
+  #   env_file:
+  #     - ./secrets/loginInformation.env
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - transaction-api
+
+networks:
+  app-network:
+    driver: bridge
+    name: spend-sentinel-app-network
