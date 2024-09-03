@@ -5,7 +5,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./db:/data/db
+      - spend-sentinel-db:/data/db
     container_name: mongodb
     networks:
       - app-network
@@ -43,25 +43,31 @@ services:
       - app-network
     environment:
       - TRANSACTION_API_URL=http://transaction-api:8080/
-      - BOT_SAMPLE_INTERVAL=60 #seconds
+      - BOT_SAMPLE_INTERVAL=60 #secondsSCRAPE_INTERVAL
     env_file:
       - ./secrets/botSecrets.env
     depends_on:
       - transaction-api
-
-  # spend-sentinel-bank-scraper:
-  #   image: bennoama/spend-sentinel-bank-scraper:latest
-  #   container_name: spend-sentinel-bank-scraper
-  #   environment:
-  #     - TRANSACTION_API_URL=http://transaction-api:8080
-  #   env_file:
-  #     - ./secrets/loginInformation.env
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     - transaction-api
+  spend-sentinel-bank-scraper:
+    image: bennoama/spend-sentinel-bank-scraper:latest
+    container_name: spend-sentinel-bank-scraper
+    environment:
+      - TRANSACTION_API_URL=http://transaction-api:8080
+      - SCRAPE_INTERVAL=1
+    env_file:
+      - ./secrets/loginInformation.env
+    networks:
+      - app-network
+    depends_on:
+      - transaction-api
+    volumes:
+      - scraper-volume:/service
 
 networks:
   app-network:
     driver: bridge
     name: spend-sentinel-app-network
+
+volumes:
+  spend-sentinel-db:
+  scraper-volume:
